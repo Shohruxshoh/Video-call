@@ -62,9 +62,13 @@ curl -fsS "http://127.0.0.1:$WEB_PORT/api/health" >/dev/null 2>&1 ||
 
 echo "==> Server nginx'i: $DOMAIN"
 [ -f "$SSL_CERT" ] && [ -f "$SSL_KEY" ] || die "sertifikat topilmadi: $SSL_CERT / $SSL_KEY (.env faylida to'g'rilang)."
-if ! openssl x509 -in "$SSL_CERT" -noout -ext subjectAltName 2>/dev/null | grep -qF -e "DNS:*.${DOMAIN#*.}" -e "DNS:$DOMAIN"; then
-  echo "Ogohlantirish: $SSL_CERT sertifikati $DOMAIN ni qamramaydi; Cloudflare 526 xatosini berishi mumkin." >&2
-fi
+# Read into a variable first: with pipefail, `openssl | grep -q` can report a false failure
+# when grep exits early and openssl gets SIGPIPE.
+san="$(openssl x509 -in "$SSL_CERT" -noout -ext subjectAltName 2>/dev/null || true)"
+case "$san" in
+  *"DNS:*.${DOMAIN#*.}"* | *"DNS:$DOMAIN"*) ;;
+  *) echo "Eslatma: $SSL_CERT sertifikatida $DOMAIN yo'q (${san##*Name:}). Cloudflare SSL rejimi \"Full (strict)\" bo'lsa, 526 xatosi chiqadi." >&2 ;;
+esac
 
 site="/etc/nginx/sites-available/$DOMAIN"
 link="/etc/nginx/sites-enabled/$DOMAIN"
