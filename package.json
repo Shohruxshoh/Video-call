@@ -1,0 +1,15 @@
+{
+  "name": "onlinevideo",
+  "private": true,
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev -w server",
+    "dev:web": "npm run dev -w web",
+    "build": "npm run build -w web",
+    "test": "npm test -w server",
+    "check": "npm run check -w server && npm run check -w web"
+  }
+}

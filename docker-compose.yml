@@ -1,0 +1,65 @@
+# Aloqa in Docker, behind the server's own nginx (which terminates HTTPS, Cloudflare in front).
+# Values come from .env (deploy/install.sh creates it).
+name: aloqa
+
+x-logging: &logging
+  # Keep container logs small.
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: '3'
+
+services:
+  app:
+    build: { context: ., target: server }
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3210
+      PUBLIC_URL: https://${DOMAIN:?DOMAIN .env faylida yo'q}
+      DB_PATH: /data/app.db
+      # TURN is reached by IP: Cloudflare proxies the domain's web traffic, but not UDP.
+      TURN_HOST: ${PUBLIC_IP:?PUBLIC_IP .env faylida yo'q}
+      TURN_SECRET: ${TURN_SECRET:?TURN_SECRET .env faylida yo'q}
+      LOG_LEVEL: warn
+    volumes:
+      - app-data:/data
+    mem_limit: 400m
+    logging: *logging
+
+  # App files + proxy for /api and /ws. Published on localhost only: the server's nginx forwards here.
+  web:
+    build: { context: ., target: web }
+    restart: unless-stopped
+    depends_on:
+      app: { condition: service_healthy }
+    ports:
+      - '127.0.0.1:${WEB_PORT:-8090}:80'
+    environment:
+      DOMAIN: ${DOMAIN}
+    mem_limit: 64m
+    logging: *logging
+
+  # TURN relay for calls that can't connect directly (mobile CGNAT, strict Wi-Fi).
+  # Host networking: publishing ~800 UDP relay ports through Docker would cost a lot of CPU.
+  # Pinned to the public IP, otherwise coturn may hand out a Docker bridge address as the relay.
+  coturn:
+    image: coturn/coturn:4-alpine
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./deploy/turnserver.conf:/etc/coturn/turnserver.conf:ro
+    command:
+      - -c
+      - /etc/coturn/turnserver.conf
+      - --static-auth-secret=${TURN_SECRET}
+      - --realm=${DOMAIN}
+      - --server-name=${DOMAIN}
+      - --listening-ip=${PUBLIC_IP}
+      - --relay-ip=${PUBLIC_IP}
+    mem_limit: 128m
+    logging: *logging
+
+volumes:
+  app-data:

@@ -1,0 +1,198 @@
+/* Palette after Samarkand tilework: turquoise and lapis glaze on cool plaster, saffron for warnings,
+   pomegranate for ending a call. System fonts only, so nothing extra downloads on a slow line. */
+:root {
+  color-scheme: light dark;
+  --bg: #f2f5f6;
+  --surface: #ffffff;
+  --surface-2: #e7edef;
+  --ink: #16233b;
+  --ink-2: #56627a;
+  --line: #dbe3e7;
+  --turq: #0f7f80;
+  --turq-ink: #ffffff;
+  --turq-soft: #dcefee;
+  --lapis: #2d4a9a;
+  --saffron: #8a5a06;
+  --saffron-soft: #fbefd6;
+  --anor: #b8352c;
+  --online: #2fb36d;
+  --night: #0e1a33;
+  --night-2: #1a2950;
+  --bubble-mine: #0f7f80;
+  --bubble-mine-ink: #ffffff;
+  --bubble-theirs: #ffffff;
+  --focus: #2d4a9a;
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1524;
+    --surface: #152038;
+    --surface-2: #1c2944;
+    --ink: #e6ebf2;
+    --ink-2: #9aa7bd;
+    --line: #24324f;
+    --turq: #2aa9a6;
+    --turq-ink: #04201f;
+    --turq-soft: #133a3d;
+    --lapis: #8ea6ec;
+    --saffron: #e9b452;
+    --saffron-soft: #3a2d10;
+    --anor: #e0574c;
+    --bubble-mine: #17706f;
+    --bubble-mine-ink: #f2fbfb;
+    --bubble-theirs: #1c2944;
+    --focus: #8ea6ec;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.45 var(--font);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+#app {
+  height: 100dvh;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.btn.primary {
+  border-color: transparent;
+  background: var(--turq);
+  color: var(--turq-ink);
+}
+
+.btn.ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--turq);
+}
+
+.btn.small {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 15px;
+}
+
+.btn.wide {
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-2);
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+input[type='text'],
+input[type='password'],
+input:not([type]),
+textarea {
+  width: 100%;
+  /* 16px keeps iOS from zooming into focused fields. */
+  font-size: 16px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--turq);
+  box-shadow: 0 0 0 3px var(--turq-soft);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

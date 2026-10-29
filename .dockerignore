@@ -1,0 +1,11 @@
+**/node_modules
+web/dist
+server/data
+server/test
+server/scripts
+**/*.db
+**/*.db-*
+.env
+**/.env
+.git
+.claude

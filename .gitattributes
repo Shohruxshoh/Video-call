@@ -1,0 +1,3 @@
+# LF everywhere: the app is built and run on Linux (Docker), also when committed from Windows.
+* text=auto eol=lf
+*.png binary
